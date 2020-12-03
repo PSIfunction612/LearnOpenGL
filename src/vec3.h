@@ -15,6 +15,8 @@ namespace psi {
         vec3(const vec3& u) = default;
         vec3(vec3&& u) = default;
 
+        vec3 operator*(float k) const;
+
         friend std::ostream& operator<<(std::ostream& out, const vec3& a);
 
         float x = 1.f;

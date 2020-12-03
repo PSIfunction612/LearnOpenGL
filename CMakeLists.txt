@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(LearnOpenGL)
 
-add_executable(LearnOpenGL main.cpp src/shader.cpp src/shader.h src/vec3.h src/vec3.cpp)
+add_executable(LearnOpenGL main.cpp src/shader.cpp src/shader.h src/vec3.h src/vec3.cpp src/quarternion.cpp src/quarternion.h src/Frustum.h src/texture.cpp src/texture.h)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED 17)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
