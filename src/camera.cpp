@@ -24,9 +24,21 @@ glm::vec3 psi::camera::Fwd() {
     auto x = glm::cos(glm::radians(yaw))*glm::cos(glm::radians(pitch));
     auto y = glm::sin(glm::radians(pitch));
     auto z = glm::sin(glm::radians(yaw))*glm::cos(glm::radians(pitch));
-    return glm::vec3(x,y,-z);
+    return glm::vec3(x,y,z);
 }
 
 glm::vec3 psi::camera::Up() {
     return glm::vec3(0,1,0);
+}
+
+void psi::camera::rotate_x(float angle) {
+    pitch += angle;
+    if (pitch >= 89.f) pitch = 89.0f;
+    if (pitch <= -89.f) pitch = -89.f;
+}
+
+void psi::camera::rotate_y(float angle) {
+    yaw += angle;
+    if (yaw >= 360) yaw -= 360.f;
+
 }

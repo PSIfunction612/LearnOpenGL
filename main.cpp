@@ -17,12 +17,15 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 void processInput(GLFWwindow *window);
 
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+
+
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 
-psi::camera cam{glm::vec3(0,0,-3)};
+psi::camera cam{glm::vec3(0,0,3)};
 float smooth = 0.5f;
 
 int main() {
@@ -43,6 +46,11 @@ int main() {
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    //glfw mouse setup
+    // ---------------
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -239,6 +247,21 @@ void processInput(GLFWwindow *window) {
         smooth += speed;
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
         smooth -= speed;
+}
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    static float lastX = 400, lastY = 300;
+    const float sensitivity = 0.1f;
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+    cam.rotate_x(yoffset);
+    cam.rotate_y(xoffset);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
