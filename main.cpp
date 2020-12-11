@@ -9,6 +9,7 @@
 #include "src/texture.h"
 #include "src/quarternion.h"
 #include "src/Frustum.h"
+#include "src/camera.h"
 
 #include <iostream>
 
@@ -20,10 +21,9 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-float offset_x = 0.f;
-float offset_y = 0.f;
+
+psi::camera cam{glm::vec3(0,0,-3)};
 float smooth = 0.5f;
-const float speed = 0.05f;
 
 int main() {
     // glfw: initialize and configure
@@ -177,16 +177,15 @@ int main() {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             glBindVertexArray(VAO);
+            auto view = cam.view();
+            auto proj_mat = projection_create(0.1f, 100.f, 0.04142 * static_cast<float>(SCR_WIDTH)/SCR_HEIGHT, 0.04142);
 
             int i = 0;
             for (auto cube_pos : cubes) {
                 auto model = glm::mat4(1.0f);
-                auto view = glm::mat4(1.f);
                 model = glm::translate(model, cube_pos);
                 float angle = 20.0f * i;
                 model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-                view = glm::translate(view, glm::vec3(0, 0, -3));
-                auto proj_mat = projection_create(0.1f, 100.f, 0.04142 * static_cast<float>(SCR_WIDTH)/SCR_HEIGHT, 0.04142);
                 auto trans = proj_mat * view * model;
                 i++;
 
@@ -225,16 +224,17 @@ int main() {
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window) {
+    const float speed = 0.05f;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-//    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-//        offset_y += speed;
-//    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-//        offset_y -= speed;
-//    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-//        offset_x -= speed;
-//    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-//        offset_x += speed;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cam.translate(speed * cam.Fwd());
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cam.translate(-speed * cam.Fwd());
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cam.translate(-speed * glm::normalize(glm::cross(cam.Fwd(), cam.Up())));
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cam.translate(speed * glm::normalize(glm::cross(cam.Fwd(), cam.Up())));
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
         smooth += speed;
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
